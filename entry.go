@@ -47,19 +47,19 @@ func (log *Entry) Copy() *Entry {
 }
 
 // Trace attempts to flush a log with LevelTrace
-func (log *Entry) Trace(args ...interface{}) { log.flush(LevelTrace, nil, args) }
+func (log *Entry) Trace(args ...interface{}) { log.flush(LevelTrace, log.fields, args) }
 
 // Debug attempts to flush a log with LevelDebug
-func (log *Entry) Debug(args ...interface{}) { log.flush(LevelDebug, nil, args) }
+func (log *Entry) Debug(args ...interface{}) { log.flush(LevelDebug, log.fields, args) }
 
 // Info attempts to flush a log with LevelInfo
-func (log *Entry) Info(args ...interface{}) { log.flush(LevelInfo, nil, args) }
+func (log *Entry) Info(args ...interface{}) { log.flush(LevelInfo, log.fields, args) }
 
 // Warn attempts to flush a log with LevelWarn
-func (log *Entry) Warn(args ...interface{}) { log.flush(LevelWarn, nil, args) }
+func (log *Entry) Warn(args ...interface{}) { log.flush(LevelWarn, log.fields, args) }
 
 // Error attempts to flush a log with LevelError
-func (log *Entry) Error(args ...interface{}) { log.flush(LevelError, nil, args) }
+func (log *Entry) Error(args ...interface{}) { log.flush(LevelError, log.fields, args) }
 
 // Out attempts to flush a log with LevelOut
-func (log *Entry) Out(args ...interface{}) { log.flush(LevelOut, nil, args) }
+func (log *Entry) Out(args ...interface{}) { log.flush(LevelOut, log.fields, args) }
