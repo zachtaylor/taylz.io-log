@@ -5,7 +5,7 @@ import (
 
 	"taylz.io/log"
 	"taylz.io/log/cmd/taylz.io-log-test/x"
-	"taylz.io/log/cmd/taylz.io-log-test/x/c4"
+	"taylz.io/log/cmd/taylz.io-log-test/x/examplelongpackagename"
 	"taylz.io/log/cmd/taylz.io-log-test/xyz"
 )
 
@@ -31,13 +31,13 @@ func main() {
 	logger = log.StdOutService(log.LevelTrace, log.DefaultFormatWithColor())
 	fmt.Println(`-- CutSourcePackage Test --`)
 	logger.New().Debug()
-	c4.Hi(logger.New())
-	x.Hi(logger.New())
+	examplelongpackagename.Info(logger.New())
+	x.ClosureInfo(logger.New())
 	xyz.Hi(logger.New())
 	x.CutSourcePath(logger)
 	fmt.Println(`/x.CutSourcePath(logger)`)
 	logger.New().Debug()
-	c4.Hi(logger.New())
-	x.Hi(logger.New())
+	examplelongpackagename.Info(logger.New())
+	x.ClosureInfo(logger.New())
 	xyz.Hi(logger.New())
 }

@@ -24,25 +24,36 @@ func DefaultTimeFormat(time time.Time) string {
 	return time.Format("15:04:05")
 }
 
-// DefaultSourceFormat formats a string to max length 32, elipses the beginning
+// DefaultSourceFormat formats a left-padded string with length 24, elipses the beginning if necessary
 func DefaultSourceFormat(src string) string {
-	const maxlen = 32
+	const finlen = 24
 	lensrc := len(src)
-	if lensrc <= maxlen {
-		return src
+	lendif := lensrc - finlen
+	buf := make([]byte, finlen)
+	i := 0
+	j := 0
+	if lendif > 0 {
+		buf[i] = '.'
+		i++
+		buf[i] = '.'
+		i++
+		buf[i] = '.'
+		i++
+		j = lendif + 3
 	}
-	lendif := lensrc - maxlen
-	buf := make([]byte, maxlen)
-	buf[0] = '.'
-	buf[1] = '.'
-	buf[2] = '.'
-	for i := 3; i < maxlen; i++ {
-		buf[i] = src[lendif+i]
+	for i < finlen && j < lensrc {
+		buf[i] = src[j]
+		i++
+		j++
+	}
+	for i < finlen {
+		buf[i] = ' '
+		i++
 	}
 	return string(buf)
 }
 
-// DefaultMessageFormat formats a string to "%-15s " (minimum length 16, left-padded, and last char is space)
+// DefaultMessageFormat formats a string to "%-18s" (minimum length 18, right-padded)
 func DefaultMessageFormat(msg string) string {
-	return fmt.Sprintf("%-15s ", msg)
+	return fmt.Sprintf("%-18s", msg)
 }
