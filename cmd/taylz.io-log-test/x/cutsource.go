@@ -1,8 +1,13 @@
 package x
 
-import "taylz.io/log"
+import (
+	"fmt"
 
-func CutSourcePath(logger *log.Service) *log.Service {
-	logger.Format().CutPathSource()
-	return logger
+	"taylz.io/log/logfmt"
+	"taylz.io/types"
+)
+
+func CutSourcePath(src *logfmt.SourceCutter) {
+	fmt.Println(types.NewSource(0), "cut!")
+	src.Cut()
 }

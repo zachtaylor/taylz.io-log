@@ -1,59 +1,56 @@
 package log
 
 import (
-	"fmt"
-	"time"
+	"taylz.io/log/logfmt"
+	"taylz.io/types"
 )
+
+// NewSourceCuttingFormatter creates a `taylz.io/log/logfmt/SourceCutter`
+func NewSourceCuttingFormatter() *logfmt.SourceCutter { return logfmt.NewSourceCutter() }
+
+// DefaultSourceFormatter creates a formatter with the direct call stack parent package added to the source cut set
+func DefaultSourceFormatter() func(string) string {
+	return NewSourceCuttingFormatter().CutPathWith(types.NewSource(1), 0).Format
+}
 
 // DefaultFormatWithColor creates a new Format with colors, and default time and message formats
 func DefaultFormatWithColor() *Format {
-	f := NewFormat(DefaultTimeFormat, DefaultSourceFormat, DefaultMessageFormat, DefaultColors())
-	f.CutPathWith(NewSource(1), 0)
-	return f
+	return NewFormat(DefaultTimeFormatter, logfmt.Middleware(
+		NewSourceCuttingFormatter().CutPathWith(types.NewSource(1), 0).Format,
+		logfmt.RightPadLeftElide(20),
+	), DefaultMessageFormatter, DefaultColors())
 }
 
 // DefaultFormatWithoutColor creates a new Format without colors, and default time and message formats
 func DefaultFormatWithoutColor() *Format {
-	f := NewFormat(DefaultTimeFormat, DefaultSourceFormat, DefaultMessageFormat, nil)
-	f.CutPathWith(NewSource(1), 0)
-	return f
+	return NewFormat(DefaultTimeFormatter, logfmt.Middleware(
+		NewSourceCuttingFormatter().CutPathWith(types.NewSource(1), 0).Format,
+		logfmt.RightPadLeftElide(20),
+	), DefaultMessageFormatter, nil)
 }
 
-// DefaultTimeFormat returns "15:04:05" (24-hour format)
-func DefaultTimeFormat(time time.Time) string {
-	return time.Format("15:04:05")
+// QuickFormat creates a Format for 1-off executables / scripts that replaces the time field with the given prefix, and default time and message formats
+func QuickFormat(str string) *Format {
+	return NewFormat(ReplaceTimeFormatter(str), WipeFormatter, DefaultMessageFormatter, DefaultColors())
 }
 
-// DefaultSourceFormat formats a left-padded string with length 24, elipses the beginning if necessary
-func DefaultSourceFormat(src string) string {
-	const finlen = 24
-	lensrc := len(src)
-	lendif := lensrc - finlen
-	buf := make([]byte, finlen)
-	i := 0
-	j := 0
-	if lendif > 0 {
-		buf[i] = '.'
-		i++
-		buf[i] = '.'
-		i++
-		buf[i] = '.'
-		i++
-		j = lendif + 3
-	}
-	for i < finlen && j < lensrc {
-		buf[i] = src[j]
-		i++
-		j++
-	}
-	for i < finlen {
-		buf[i] = ' '
-		i++
-	}
-	return string(buf)
-}
+// ClampFormatter returns a formatter that produces string of set size, right-padded or elided if necessary
+var ClampFormatter = logfmt.RightPadLeftElide
 
-// DefaultMessageFormat formats a string to "%-18s" (minimum length 18, right-padded)
-func DefaultMessageFormat(msg string) string {
-	return fmt.Sprintf("%-18s", msg)
-}
+// DefaultTimeFormatter uses 24-hour time format ("15:04:05")
+var DefaultTimeFormatter = logfmt.TimeDefault
+
+// DefaultMessageFormatter formats a string to "%-20s" (minimum length 20, right-padded)
+var DefaultMessageFormatter = logfmt.RightPadMinimum(20)
+
+// ReplaceTimeFormatter returns a formatter that reuses the time slot of the log string to print something else
+var ReplaceTimeFormatter = logfmt.TimeReplace
+
+// MiddlewareFormatter returns a formatter that takes 2 formatters, and runs them in sequence
+var MiddlewareFormatter = logfmt.Middleware
+
+// WipeTimeFormatter formats a time to clear content
+var WipeTimeFormatter = logfmt.TimeWipe
+
+// WipeFormatter formats a string to clear content
+var WipeFormatter = logfmt.Wipe

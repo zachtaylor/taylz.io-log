@@ -2,20 +2,19 @@ package log
 
 import (
 	"fmt"
-	"io"
-	"strings"
-	"time"
+
+	"taylz.io/types"
 )
 
 // Service provides logging functionality
 type Service struct {
 	level Level
 	f     *Format
-	w     io.WriteCloser
+	w     types.WriteCloser
 }
 
 // NewService creates a log service with the minimum Level, format function and output dest
-func NewService(lvl Level, f *Format, w io.WriteCloser) *Service {
+func NewService(lvl Level, f *Format, w types.WriteCloser) *Service {
 	return &Service{
 		level: lvl,
 		f:     f,
@@ -53,7 +52,7 @@ func (svc *Service) Out(args ...interface{}) { svc.flush(LevelOut, nil, args) }
 // flush creates a Time and Source to trigger write, only to be used by exposed funcs
 func (svc *Service) flush(lvl Level, flds Fields, args []interface{}) {
 	if lvl >= svc.level {
-		svc.w.Write(svc.f.Format(time.Now(), NewSource(2), lvl, flds, parseargs(args)))
+		svc.w.Write(svc.f.Format(types.NewTime(), types.NewSource(2), lvl, flds, parseargs(args)))
 	}
 }
 
@@ -64,7 +63,7 @@ func (svc *Service) Format() *Format { return svc.f }
 func (svc *Service) Close() error { return svc.w.Close() }
 
 func parseargs(args []interface{}) string {
-	var sb = &strings.Builder{}
+	var sb = &types.StringBuilder{}
 	fmt.Fprint(sb, args...)
 	return sb.String()
 }
