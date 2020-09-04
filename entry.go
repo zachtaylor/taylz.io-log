@@ -1,9 +1,11 @@
 package log
 
+import "taylz.io/types"
+
 // NewEntry creates a new Entry
-func NewEntry(flush EntryFunc, fields Fields) *Entry {
+func NewEntry(flush EntryFunc, fields types.Dict) *Entry {
 	if fields == nil {
-		fields = make(Fields)
+		fields = make(types.Dict)
 	}
 	return &Entry{
 		flush:  flush,
@@ -14,20 +16,20 @@ func NewEntry(flush EntryFunc, fields Fields) *Entry {
 // Entry is an intermediate step in creating a log
 type Entry struct {
 	flush  EntryFunc
-	fields Fields
+	fields types.Dict
 }
 
 // EntryFunc is a hook to flush the entry
-type EntryFunc = func(Level, Fields, []interface{})
+type EntryFunc = func(Level, types.Dict, []interface{})
 
-// Add writes any value to the Fields
+// Add writes any value to the types.Dict
 func (log *Entry) Add(k string, v interface{}) *Entry {
 	log.fields[k] = v
 	return log
 }
 
-// With writes any value to the Fields
-func (log *Entry) With(fields Fields) *Entry {
+// With writes any value to the types.Dict
+func (log *Entry) With(fields types.Dict) *Entry {
 	for k, v := range fields {
 		log.fields[k] = v
 	}
@@ -36,7 +38,7 @@ func (log *Entry) With(fields Fields) *Entry {
 
 // Copy duplicates the Entry
 func (log *Entry) Copy() *Entry {
-	fields := make(Fields)
+	fields := make(types.Dict)
 	for k, v := range log.fields {
 		fields[k] = v
 	}

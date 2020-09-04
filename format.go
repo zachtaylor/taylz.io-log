@@ -29,7 +29,7 @@ func NewFormat(tfmt func(types.Time) string, srcfmt, msgfmt func(string) string,
 }
 
 // Format creates writable output
-func (f *Format) Format(time types.Time, src *types.Source, lvl Level, flds Fields, msg string) []byte {
+func (f *Format) Format(time types.Time, src *types.Source, lvl Level, flds types.Dict, msg string) []byte {
 	var sb types.StringBuilder
 	if str := f.TimeFmt(time); len(str) > 0 {
 		sb.WriteString(str)

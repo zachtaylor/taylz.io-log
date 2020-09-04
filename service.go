@@ -26,10 +26,10 @@ func NewService(lvl Level, f *Format, w types.WriteCloser) *Service {
 func (svc *Service) New() *Entry { return NewEntry(svc.flush, nil) }
 
 // Add returns a new Entry with a field value preset
-func (svc *Service) Add(k string, v interface{}) *Entry { return NewEntry(svc.flush, Fields{k: v}) }
+func (svc *Service) Add(k string, v interface{}) *Entry { return NewEntry(svc.flush, types.Dict{k: v}) }
 
-// With returns a new Entry with the given Fields
-func (svc *Service) With(fields Fields) *Entry { return NewEntry(svc.flush, fields) }
+// With returns a new Entry with the given types.Dict
+func (svc *Service) With(fields types.Dict) *Entry { return NewEntry(svc.flush, fields) }
 
 // Trace attempts to flush a log with LevelTrace
 func (svc *Service) Trace(args ...interface{}) { svc.flush(LevelTrace, nil, args) }
@@ -50,7 +50,7 @@ func (svc *Service) Error(args ...interface{}) { svc.flush(LevelError, nil, args
 func (svc *Service) Out(args ...interface{}) { svc.flush(LevelOut, nil, args) }
 
 // flush creates a Time and Source to trigger write, only to be used by exposed funcs
-func (svc *Service) flush(lvl Level, flds Fields, args []interface{}) {
+func (svc *Service) flush(lvl Level, flds types.Dict, args []interface{}) {
 	if lvl >= svc.level {
 		svc.w.Write(svc.f.Format(types.NewTime(), types.NewSource(2), lvl, flds, parseargs(args)))
 	}
