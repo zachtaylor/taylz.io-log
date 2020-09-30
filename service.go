@@ -22,14 +22,16 @@ func NewService(lvl Level, f *Format, w types.WriteCloser) *Service {
 	}
 }
 
+func (svc *Service) isLogger() Logger { return svc }
+
 // New returns a new Entry
-func (svc *Service) New() *Entry { return NewEntry(svc.flush, nil) }
+func (svc *Service) New() Entry { return NewEntry(svc.flush, nil) }
 
 // Add returns a new Entry with a field value preset
-func (svc *Service) Add(k string, v interface{}) *Entry { return NewEntry(svc.flush, types.Dict{k: v}) }
+func (svc *Service) Add(k string, v interface{}) Entry { return NewEntry(svc.flush, types.Dict{k: v}) }
 
 // With returns a new Entry with the given types.Dict
-func (svc *Service) With(fields types.Dict) *Entry { return NewEntry(svc.flush, fields) }
+func (svc *Service) With(fields types.Dict) Entry { return NewEntry(svc.flush, fields) }
 
 // Trace attempts to flush a log with LevelTrace
 func (svc *Service) Trace(args ...interface{}) { svc.flush(LevelTrace, nil, args) }
